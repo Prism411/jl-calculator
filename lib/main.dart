@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jl_calculator/services/calculator_logic.dart';
 
 import 'services/calculator_service.dart';
 
@@ -26,85 +27,32 @@ class Calculadora extends StatefulWidget {
 
 class _CalculadoraState extends State<Calculadora> {
   String displayText = "0";
-  String expression = "";
-  bool isResultShown = false; // Indica se o display está mostrando um resultado
-  List<String> history = [];
+  bool isResultShown = false;
+  final calculatorLogic = CalculatorLogic();
+  final calculatorService = Calculatorservice();
 
-  final Calculatorservice calculatorService = Calculatorservice();
-
-  final List<String> buttonLabels = [
+    final List<String> buttonLabels = [
     '1', '2', '3', '+',
     '4', '5', '6', '-',
     '7', '8', '9', 'X',
     'C', '0', '=', '/'
   ];
- void showHistoryDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Histórico'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: history.map((e) => Text(e)).toList(),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Fechar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+
+   void updateDisplay(String newText) {
+    if (newText == "=") {
+      final result = calculatorLogic.calculateResult(calculatorService);
+      displayText = result.toString();
+      isResultShown = true;
+    } else {
+      final updatedExpression = calculatorLogic.updateExpression(newText, isResultShown);
+      displayText = updatedExpression;
+      isResultShown = newText == "=";
+    }
+    setState(() {});
   }
 
- void updateDisplay(String newText) {
-  setState(() {
-    if (newText == "C") {
-      expression = "";
-      displayText = "0";
-      isResultShown = false;
-    } else if (newText == "=") {
-      // Guarda a expressão original antes de calcular o resultado
-      final originalExpression = expression;
-
-      // Calcula o resultado
-      double result = calculatorService.calculateResult(expression);
-
-      // Atualiza a exibição com o resultado
-      displayText = result.toString();
-      // Indica que o resultado está sendo exibido
-      isResultShown = true;
-
-      // Adiciona a expressão original e o resultado ao histórico
-      history.add("$originalExpression = $displayText");
-
-      // Prepara a expressão para a próxima operação, iniciando com o resultado atual
-      expression = displayText;
-    } else {
-      if (isResultShown) {
-        // Se um novo dígito é digitado logo após o resultado ser mostrado, começa uma nova expressão
-        if ("+-X/".contains(newText)) {
-          // Se um operador for digitado após o resultado, usa o resultado como início da nova expressão
-          expression += newText;
-        } else {
-          // Se um dígito for digitado, começa uma nova expressão com esse dígito
-          expression = newText;
-        }
-        isResultShown = false;
-      } else {
-        // Adiciona o novo texto à expressão atual
-        expression += newText;
-      }
-      // Atualiza a exibição com a expressão atual
-      displayText = expression;
-    }
-  });
-}
+ 
+  
 
 
 @override
@@ -159,9 +107,9 @@ Widget build(BuildContext context) {
             top: 20,
             left: 20,
             child: FloatingActionButton(
-              onPressed: showHistoryDialog,
-              child: Icon(Icons.history),
-              mini: true, // Torna o botão um pouco menor
+            onPressed: () => calculatorLogic.showHistoryDialog(context),
+            child: Icon(Icons.history),
+            mini: true,
             ),
           ),
         ],
