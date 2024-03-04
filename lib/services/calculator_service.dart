@@ -1,4 +1,4 @@
-class CalculatorService {
+class Calculatorservice {
   double calculateResult(String expression) {
     double result = 0;
     String currentOperator = '';
