@@ -60,5 +60,4 @@ class CalculatorLogic {
     return history;
   }
 
-  
 }

@@ -37,7 +37,6 @@ class _CalculadoraState extends State<Calculadora> {
     '7', '8', '9', 'X',
     'C', '0', '=', '/'
   ];
-
    void updateDisplay(String newText) {
     if (newText == "=") {
       final result = calculatorLogic.calculateResult(calculatorService);
@@ -50,11 +49,6 @@ class _CalculadoraState extends State<Calculadora> {
     }
     setState(() {});
   }
-
- 
-  
-
-
 @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -117,9 +111,6 @@ Widget build(BuildContext context) {
     ),
   );
 }
-
-
-
   Widget botaoCalculadora(String label, VoidCallback onPressed) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
